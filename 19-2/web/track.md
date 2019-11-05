@@ -58,7 +58,7 @@
 
 5.5 Iteratively Learning Embeddings and Rules for Knowledge Graph Reasoning
 
-## 6. Demos and PhD Symposium
+## ~~6. Demos and PhD Symposium~~
 
 6.1 Estimating the Total Volume of Queries to Google
 
@@ -70,67 +70,6 @@
 
 6.5 Neural Multimodal Belief Tracker with Adaptive Attention for Dialogue Systems
 
-6.6 FARE: Diagnostics for Fair Ranking using Pairwise Error Metrics
-
-6.7 Unbiased LambdaMART: An Unbiased Pairwise Learning-to-Rank Algorithm
-
-6.8 Is Yelp Actually Cleaning Up the Restaurant Industry? A Re-Analysis on the Relative Usefulness of Consumer Reviews
-
-6.9 Self- and Cross-Excitation in StackExchange Question & Answer Communities
-
-6.10 Dressing as a Whole: Outfit Compatibility Learning Based on Node-wise Graph Neural Networks
-
-6.11 Adversarial Training Methods for Network Embedding
-
-6.12 NetSMF: Large-Scale Network Embedding as Sparse Matrix Factorization
-
-6.13 GhostLink: Mining Latent Influence Networks for Influence-aware Item Recommendation
-
-6.14 The Monopolistic Auction and Bitcoin's Fee Market
-
-6.15 Aggregating E-commerce Search Results from Heterogeneous Sources via Hierarchical Reinforcement Learning
-
-6.16 Place Deduplication with Embeddings
-
-6.17 Signed Distance-based Deep Memory Recommender
-
-6.18 Semi-Supervised Graph Classification: A Hierarchical Graph Perspective
-
-6.19 Multimodal Review Generation for Recommender Systems
-
-6.20 Neural IR Meets Graph Embedding: A Ranking Model for Product Search
-
-6.21 Dealing with Interdependencies and Uncertainty in Multi-Channel Advertising Campaigns Optimization
-
-6.22 Learning Resolution Parameters for Graph Clustering
-
-6.23 Exploiting Ratings, Reviews and Relationships for Item Recommendations in Topic Based Social Networks
-
-6.24 Spectrum-enhanced Pairwise Learning to Rank
-
-6.25 Evaluating Login Challenges as a Defense Against Account Takeover
-
-6.26 Nonlinear diffusions for community detection and semi-supervised learning
-
-6.27 Multilevel Network Alignment
-
-6.28 Hack for Hire: Exploring the Emerging Market for Account Hijacking
-
-6.29 Persona-Aware Tips Generation
-
-6.30 Local Matching Networks for Engineering Diagram Search
-
-6.31 Improved Cross-Lingual Question Retrieval for Community Question Answering
-
-6.32 Stereotypical Bias Removal for Hate Speech Detection Task using Knowledge-based Generalizations
-
-6.33 Heterographic Pun Recognition via Pronunciation and Spelling Understanding Gated Attention Network
-
-6.34 What We Vote for? Answer Selection from User Expertise View in Community Question Answering
-
-6.35 Predicting pregnancy using large-scale data from a women’s health tracking mobile application
-
-6.36 Measurement and Early Detection of Third-Party Application Abuse on Twitter
 
 ... ...
 
@@ -243,7 +182,7 @@
 
 16.5 Learning Dual Retrieval Module for Semi-supervised Relation Extraction
 
-## 17.Poster Session
+## ~~17.Poster Session~~
 
 17.1 Autonomous Learning for Face Recognition in the Wild via Ambient Wireless Cues
 
@@ -369,7 +308,7 @@
 
 28.5 Towards Efficient Sharing: A Usage Balancing Mechanism for Bike Sharing Systems
 
-## 29. Poster Session: Research Track and Demos 
+## ~~29. Poster Session: Research Track and Demos~~
 
 29.1 Alleviating Users' Pain of Waiting: Effective Task Grouping for Online-to-Offline Food Delivery Services
 

@@ -1,5 +1,5 @@
 import requests
-#import os
+import os
 from bs4 import BeautifulSoup
 import bs4
 from cons import headerChange
@@ -39,20 +39,13 @@ print(ipList)
 def getHTMLTxt(url, flag):
     querystring = {"status":"P"}
     headers = {
-        'accept': "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-        'accept-encoding': "gzip, deflate, br",
-        'accept-language': "zh-CN,zh;q=0.8",
-        'cache-control': "no-cache",
-        'connection': "keep-alive",
-        'cookie': "ll=\"118161\"; bid=hvtlFYn8N2g; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1502935063%2C%22https%3A%2F%2Fwww.google.com%2F%22%5D; __yadk_uid=4glVfZfkxqS5u5wHymY2aa0dEnqhZ1GL; ps=y; dbcl2=\"142710097:FLM/J8N4I1w\"; ck=12Nj; _vwo_uuid_v2=3474CBA32AC36EAA99D3D339FC358DBA|16192af0fbe498c7433958350c7be868; __utma=30149280.810866807.1502935064.1502935064.1502935064.1; __utmb=30149280.3.9.1502935124997; __utmc=30149280; __utmz=30149280.1502935064.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); __utmv=30149280.14271; __utma=223695111.302797075.1502935064.1502935064.1502935064.1; __utmb=223695111.0.10.1502935064; __utmc=223695111; __utmz=223695111.1502935064.1.1.utmcsr=google|utmccn=(organic)|utmcmd=organic|utmctr=(not%20provided); _pk_id.100001.4cf6=12c01e44b4266fee.1502935063.1.1502936044.1502935063.; _pk_ses.100001.4cf6=*; push_noty_num=0; push_doumail_num=0",
-        'host': "movie.douban.com",
-        'referer': "https://movie.douban.com/subject/26392671/",
-        'upgrade-insecure-requests': "1",
         'user-agent': headerChange(),
-        'postman-token': "e1715f99-6029-83ce-5574-3f4e6148b96c"
-        }
+    }
     proxies = get_random_ip(ipList)
     r = requests.request("GET", url, headers=headers, params=querystring, proxies = proxies)
+    #r.encoding = 'utf-8' 
+    r = requests.get(url, headers=headers, params=querystring, proxies = proxies)
+
     try:
         if flag == 1:    #如果传入的是获取评论信息的url
             r.encoding = 'utf-8'      #尝试改变编码
@@ -70,7 +63,7 @@ def getComments(url, cmt):          #获取一整页的评论
     for tagDiv in soup.find_all('div', attrs={'class':'comment'}):
         if isinstance(tagDiv, bs4.element.Tag):
             infoComt = tagDiv.find('p')
-            cmt.append(infoComt.string)
+            cmt.append(infoComt.text)
             count = count + 1
     return count
 
@@ -102,11 +95,11 @@ def main():
     urlStart = "https://movie.douban.com/subject/10477598/comments?"    #此处comments后的都不要有，包括'?'
     #depth = countOfComments(urlStart)
     depth = 100   #手动设置评论条数，控制时间
-    fpath = "D:\PY\CrawDoubanComments\comments.txt"
+    fpath = "../comments.txt"
     cmt = []
     count = 0
-    #if os.path.exists('D:\PY\CrawDoubanComments\comments.txt'):
-        #os.remove('D:\PY\CrawDoubanComments\comments.txt')      #因为需要测试，懒得手动删除，所以程序开始时对文件进行删除操作
+    if os.path.exists('../comments.txt'):
+        os.remove('../comments.txt')      #因为需要测试，懒得手动删除，所以程序开始时对文件进行删除操作
     urlNext = ""
     print("爬取评论")
     while(count < depth and len(cmt) < depth):
@@ -121,13 +114,12 @@ def main():
     print("\n爬取成功，进行储存。。。")
     for i in range(len(cmt)):
         try:
-            print(cmt[i])
-            #with open(fpath, 'a', encoding='utf-8') as f:
-                #f.write(cmt[i] + '\n')
-                # print('\r正在储存评论，进度：第{}条，共{}条'.format(i + 1, len(cmt)), end = "")
+            with open(fpath, 'a', encoding='utf-8') as f:
+                f.write(cmt[i] + '\n')
+                print('\r正在储存评论，进度：第{}条，共{}条'.format(i + 1, len(cmt)), end = "")
         except:
             continue
 
     print("\n评论储存完毕！")
 
-#main()
+main()

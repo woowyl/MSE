@@ -66,22 +66,16 @@ def crawl():
         fm = input('输入错误，请重新输入文件保存格式（txt、json、csv）：')
     fd = openfile(fm)
     print('开始爬取')
-    for page in range(0,25,25):
+    for page in range(0,250,25):
         print('正在爬取第 ' + str(page+1) + ' 页至第 ' + str(page+25) + ' 页......')
         html = get_page(url.format(page=str(page)))
         print(html)
-        #data = parse_page(html)
-        #save2file(fm,fd,data)
+        data = parse_page(html)
+        save2file(fm,fd,data)
         time.sleep(random.random())
     fd.close()
     print('结束爬取')
 
 
-# 另一个爬虫
-def crawl2():
-    url = "https://movie.douban.com/subject/10477598/comments"
-    html = get_page(url)
-    print(html)
-
 if __name__ == '__main__':
-    crawl2()
+    crawl()

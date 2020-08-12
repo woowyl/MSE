@@ -124,5 +124,5 @@ def crawlAPI(start):
 
 # 爬取详情页
 if __name__ == '__main__':
-    crawlAPI(2460)
+    crawlAPI(2480)
     #print(list(map(getAPIUrl,[{'a':1, "url":'hello'},{"url":'world'}])))

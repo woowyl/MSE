@@ -1,3 +1,4 @@
+# coding: utf-8
 import requests 
 import json
 from lxml import etree
@@ -12,12 +13,13 @@ from fake_useragent import UserAgent
 
 #ua = UserAgent(use_cache_server=False) 
 ua = UserAgent(verify_ssl=False) 
-print(ua.random)
+#print(ua.random)
 APIEND = 20000
-
+ipList = []
 def get_ip_list():
     #国内高匿代理ip网站
-    url = 'https://www.kuaidaili.com/free/intr/5/'
+    url = 'https://www.kuaidaili.com/free/intr/{page}/'.format(page=random.randint(1,3000))
+    print(url)
     ipAgent = {
         'http':'https://60.216.20.211:8001'
     }
@@ -34,6 +36,7 @@ def get_ip_list():
         tds = ip_info.find_all('td')
         ip_list.append(tds[0].text + ':' + tds[1].text)
     return ip_list
+
 def get_random_ip(ip_list):
     proxy_list = []
     for ip in ip_list:
@@ -42,22 +45,30 @@ def get_random_ip(ip_list):
     proxies = {'http': proxy_ip}
     return proxies
 
-ipList = get_ip_list()
+#ipList = get_ip_list()
+print(ipList)
+
+def get_proxy():
+    return requests.get("http://127.0.0.1:5010/get/").json()
+
+def delete_proxy(proxy):
+    requests.get("http://127.0.0.1:5010/delete/?proxy={}".format(proxy))
+
 
 # 获取网页源代码
 def get_page(url):
     querystring = {"status":"P"}
     headers = {
         'user-agent': ua.random,
-        'Cookie': 'll="108296"; bid=yCQKy1Zfre0; __utmz=30149280.1590235049.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _vwo_uuid_v2=DB73CB88E1A6E82140889364A5414874F|9b7e19408b6120c2eeb607301bf50be5; __utmc=30149280; __utmc=223695111; push_noty_num=0; push_doumail_num=0; __utmv=30149280.8848; ap_v=0,6.0; __utma=30149280.607930696.1590235049.1597073781.1597160293.7; __utmt=1; __utma=223695111.1743980471.1590235050.1597073781.1597160295.6; __utmz=223695111.1597160295.6.4.utmcsr=douban.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1597160295%2C%22https%3A%2F%2Fwww.douban.com%2F%22%5D; _pk_ses.100001.4cf6=*; _pk_id.100001.4cf6=9d6e287a985fe453.1590235050.6.1597160317.1597073780.; __utmb=223695111.4.10.1597160295; dbcl2="88489827:i32rzHzDTUI"; ck=db7p; __utmb=30149280.8.10.1597160293'
     }
-    proxies = get_random_ip(ipList)
+    #proxies = get_random_ip(ipList)
+    proxy = get_proxy().get("proxy")
     # 加代理版本
-    print(proxies)
-    response = requests.request("GET", url, headers=headers, params=querystring, proxies = proxies)
+    print("http://{}".format(proxy))
+    # response = requests.request("GET", url, headers=headers, params=querystring, proxies = proxies)
+    response = requests.request("GET", url, headers=headers, params=querystring, proxies = {"http": "http://{}".format(proxy)})
     #response = requests.get(url=url,headers=headers)
     data = response.text
-    print(data);
     return data
 
 # 解析网页源代码
@@ -100,6 +111,7 @@ def getAPIUrl(x):
 
 # 爬取接口
 def crawlAPI(start):
+    global ipList
     pageStart = start
     url = 'https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10&tags=%E7%94%B5%E5%BD%B1&start={page}&year_range=2020,2020'
     print('开始爬取')
@@ -115,8 +127,13 @@ def crawlAPI(start):
             if isinstance(data, list) and len(data) == 0:
                 break
             else:
-                print(data, '遇到数据中断，10s后重新发送请求。开始页码', pageStart)
-                time.sleep(10)
+                print(data, '遇到数据中断，8s后重新发送请求。开始页码', pageStart)
+                ipList = get_ip_list()
+                while len(ipList) == 0:
+                    ipList = get_ip_list()
+                
+                print(ipList)
+                time.sleep(8)
                 crawlAPI(pageStart)
        
         time.sleep(5)
@@ -124,5 +141,5 @@ def crawlAPI(start):
 
 # 爬取详情页
 if __name__ == '__main__':
-    crawlAPI(2480)
+    crawlAPI(2800)
     #print(list(map(getAPIUrl,[{'a':1, "url":'hello'},{"url":'world'}])))

@@ -11,22 +11,24 @@ import bs4
 import os.path
 from fake_useragent import UserAgent  
 
-#ua = UserAgent(use_cache_server=False) 
-ua = UserAgent(verify_ssl=False) 
+ua = UserAgent(use_cache_server=False) 
+#ua = UserAgent(verify_ssl=False) 
 #print(ua.random)
+
 APIEND = 20000
 ipList = []
 def get_ip_list():
     #国内高匿代理ip网站
-    url = 'https://www.kuaidaili.com/free/intr/{page}/'.format(page=random.randint(1,3000))
-    print(url)
+    url = 'http://www.xiladaili.com/https/'#{page}/'.format(page=random.randint(1,2))
     ipAgent = {
-        'http':'https://60.216.20.211:8001'
+        'http':'http://125.108.123.95:9000'
     }
     headers = {
         'User-Agent': "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
     }
-    web_data = requests.get(url, headers=headers, proxies = ipAgent)
+    #web_data = requests.get(url, headers=headers, proxies = ipAgent)
+    web_data = requests.get(url, headers=headers)
+    print(web_data)
     soup = BeautifulSoup(web_data.text, 'lxml')
     #print(soup)
     ips = soup.find_all('tr')
@@ -34,41 +36,44 @@ def get_ip_list():
     for i in range(1, len(ips)):
         ip_info = ips[i]
         tds = ip_info.find_all('td')
-        ip_list.append(tds[0].text + ':' + tds[1].text)
+        # ip_list.append(tds[0].text + ':' + tds[1].text)
+        ip_list.append(tds[0].text)
     return ip_list
 
 def get_random_ip(ip_list):
     proxy_list = []
     for ip in ip_list:
-        proxy_list.append('http://' + ip)
+        proxy_list.append('https://' + ip)
     proxy_ip = random.choice(proxy_list)
-    proxies = {'http': proxy_ip}
+    proxies = {'https': proxy_ip}
     return proxies
 
+
 #ipList = get_ip_list()
-print(ipList)
-
-def get_proxy():
-    return requests.get("http://127.0.0.1:5010/get/").json()
-
-def delete_proxy(proxy):
-    requests.get("http://127.0.0.1:5010/delete/?proxy={}".format(proxy))
-
+#print(ipList)
+ipList = [
+   "123.163.115.213:9999",
+]
 
 # 获取网页源代码
 def get_page(url):
     querystring = {"status":"P"}
     headers = {
         'user-agent': ua.random,
+        #'user-agent': "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Mobile Safari/537.36",
     }
-    #proxies = get_random_ip(ipList)
-    proxy = get_proxy().get("proxy")
+    print(ua.random)
+    proxies = get_random_ip(ipList)
+    # proxies = {
+    #     'https': 'https://125.87.85.4:57114'
+    # }
     # 加代理版本
-    print("http://{}".format(proxy))
-    # response = requests.request("GET", url, headers=headers, params=querystring, proxies = proxies)
-    response = requests.request("GET", url, headers=headers, params=querystring, proxies = {"http": "http://{}".format(proxy)})
+    print(proxies)
+    response = requests.request("GET", url, headers=headers, params=querystring, proxies = proxies)
+    #response = requests.request("GET", url, headers=headers, params=querystring, proxies = {"http": "http://{}".format(proxy)})
     #response = requests.get(url=url,headers=headers)
     data = response.text
+    print(data)
     return data
 
 # 解析网页源代码
@@ -115,7 +120,7 @@ def crawlAPI(start):
     pageStart = start
     url = 'https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10&tags=%E7%94%B5%E5%BD%B1&start={page}&year_range=2020,2020'
     print('开始爬取')
-    for page in range(pageStart,APIEND,20):
+    for page in range(pageStart,APIEND,20): 
         print('正在爬取第 ' + str(page) + ' 部至第 ' + str(page+20) + ' 部......')
         res = get_page(url.format(page=str(page)))
         data = json.loads(res).get("data")
@@ -127,19 +132,18 @@ def crawlAPI(start):
             if isinstance(data, list) and len(data) == 0:
                 break
             else:
-                print(data, '遇到数据中断，8s后重新发送请求。开始页码', pageStart)
+                print(data, '遇到数据中断，10s后重新发送请求。开始页码', pageStart)
                 ipList = get_ip_list()
                 while len(ipList) == 0:
                     ipList = get_ip_list()
-                
                 print(ipList)
-                time.sleep(8)
+                time.sleep(10)
                 crawlAPI(pageStart)
        
-        time.sleep(5)
+        time.sleep(15)
     print('结束爬取')
 
 # 爬取详情页
 if __name__ == '__main__':
-    crawlAPI(2800)
+    crawlAPI(5460)
     #print(list(map(getAPIUrl,[{'a':1, "url":'hello'},{"url":'world'}])))

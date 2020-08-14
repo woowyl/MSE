@@ -10,10 +10,12 @@ from bs4 import BeautifulSoup
 import bs4
 import os.path
 from fake_useragent import UserAgent  
+from requests.adapters import HTTPAdapter
 
 ua = UserAgent(use_cache_server=False) 
-#ua = UserAgent(verify_ssl=False) 
-#print(ua.random)
+s = requests.Session()
+s.mount('http://', HTTPAdapter(max_retries=3))
+s.mount('https://', HTTPAdapter(max_retries=3))
 
 APIEND = 20000
 ipList = []
@@ -28,7 +30,6 @@ def get_ip_list():
     }
     #web_data = requests.get(url, headers=headers, proxies = ipAgent)
     web_data = requests.get(url, headers=headers)
-    print(web_data)
     soup = BeautifulSoup(web_data.text, 'lxml')
     #print(soup)
     ips = soup.find_all('tr')
@@ -49,32 +50,34 @@ def get_random_ip(ip_list):
     return proxies
 
 
-#ipList = get_ip_list()
+ipList = get_ip_list()
 #print(ipList)
-ipList = [
-   "123.163.115.213:9999",
-]
+# ipList = [
+#    "182.46.197.11:9999",
+#    "46.137.198.224:80"
+# ]
 
 # 获取网页源代码
 def get_page(url):
+    data={}
     querystring = {"status":"P"}
     headers = {
         'user-agent': ua.random,
-        #'user-agent': "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Mobile Safari/537.36",
     }
     print(ua.random)
     proxies = get_random_ip(ipList)
-    # proxies = {
-    #     'https': 'https://125.87.85.4:57114'
-    # }
     # 加代理版本
     print(proxies)
-    response = requests.request("GET", url, headers=headers, params=querystring, proxies = proxies)
+    try:
+        response = s.get(url, headers=headers, params=querystring, proxies = proxies, timeout=8)
+        data = response.text
+        print(data)
+        return data
+    except: 
+        print("got excepiton")
+        data = get_page(url)
+        return data
     #response = requests.request("GET", url, headers=headers, params=querystring, proxies = {"http": "http://{}".format(proxy)})
-    #response = requests.get(url=url,headers=headers)
-    data = response.text
-    print(data)
-    return data
 
 # 解析网页源代码
 def parse_page(html):
@@ -123,27 +126,33 @@ def crawlAPI(start):
     for page in range(pageStart,APIEND,20): 
         print('正在爬取第 ' + str(page) + ' 部至第 ' + str(page+20) + ' 部......')
         res = get_page(url.format(page=str(page)))
-        data = json.loads(res).get("data")
-        if data:
-            movieUrls = list(map(getAPIUrl,data))
-            save2file(movieUrls)
-            pageStart = page+20
-        else:
-            if isinstance(data, list) and len(data) == 0:
-                break
+        
+        if res.find("登录") >=0:
+            print(res, '要求登录，10s后重新发送请求。开始页码', pageStart)
+            time.sleep(10)
+            crawlAPI(pageStart)
+        else: 
+            data = json.loads(res).get("data")
+            if data:
+                movieUrls = list(map(getAPIUrl,data))
+                save2file(movieUrls)
+                pageStart = page+20
             else:
-                print(data, '遇到数据中断，10s后重新发送请求。开始页码', pageStart)
-                ipList = get_ip_list()
-                while len(ipList) == 0:
+                if isinstance(data, list) and len(data) == 0:
+                    break
+                else:
+                    print(data, '遇到数据中断，10s后重新发送请求。开始页码', pageStart)
                     ipList = get_ip_list()
-                print(ipList)
-                time.sleep(10)
-                crawlAPI(pageStart)
+                    while len(ipList) == 0:
+                        ipList = get_ip_list()
+                    print(ipList)
+                    time.sleep(10)
+                    crawlAPI(pageStart)
        
-        time.sleep(15)
+        time.sleep(5)
     print('结束爬取')
 
 # 爬取详情页
 if __name__ == '__main__':
-    crawlAPI(5460)
+    crawlAPI(6700)
     #print(list(map(getAPIUrl,[{'a':1, "url":'hello'},{"url":'world'}])))

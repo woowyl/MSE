@@ -12,7 +12,8 @@ import os.path
 from fake_useragent import UserAgent  
 from requests.adapters import HTTPAdapter
 
-ua = UserAgent(use_cache_server=False) 
+# ua = UserAgent(use_cache_server=False) 
+ua = UserAgent(verify_ssl=False) 
 s = requests.Session()
 s.mount('http://', HTTPAdapter(max_retries=3))
 s.mount('https://', HTTPAdapter(max_retries=3))
@@ -142,5 +143,5 @@ def crawlAPI(start):
 
 # 爬取详情页
 if __name__ == '__main__':
-    crawlAPI(4560)
+    crawlAPI(10680)
     #print(list(map(getAPIUrl,[{'a':1, "url":'hello'},{"url":'world'}])))

@@ -12,14 +12,14 @@ import os.path
 from fake_useragent import UserAgent  
 from requests.adapters import HTTPAdapter
 
-ua = UserAgent(use_cache_server=False) 
+ua = UserAgent(verify_ssl=False)
 s = requests.Session()
 s.mount('http://', HTTPAdapter(max_retries=3))
 s.mount('https://', HTTPAdapter(max_retries=3))
 
-APIEND = 2
+APIEND = 30000
 #每次读取的长度
-STEP = 1
+STEP = 20
 ipList = []
 def get_ip_list():
     #国内高匿代理ip网站
@@ -51,63 +51,89 @@ def get_random_ip(ip_list):
 
 
 ipList = get_ip_list()
-
+proxies = get_random_ip(ipList)
 # 获取网页源代码
-def get_page(url):
+def get_page(url, keepproxy):
+    global proxies
     data={}
     querystring = {"status":"P"}
     headers = {
         'user-agent': ua.random,
     }
     print(ua.random)
-    proxies = get_random_ip(ipList)
+    if keepproxy == "new":
+        proxies = get_random_ip(ipList)
     # 加代理版本
     print(proxies)
     try:
         response = s.get(url, headers=headers, params=querystring, proxies = proxies, timeout=8)
         data = response.text
-        print(data)
         return data
     except: 
         print("got excepiton")
-        data = get_page(url)
+        data = get_page(url, 'new')
         return data
     #response = requests.request("GET", url, headers=headers, params=querystring, proxies = {"http": "http://{}".format(proxy)})
 
 # 解析网页源代码
 def parse_page(html):
+    film = {}
     html_elem = etree.HTML(html)
-    print(html_elem)
-    # links = html_elem.xpath('//div[@class="hd"]/a/@href')
-    # titles = html_elem.xpath('//div[@class="hd"]/a/span[1]/text()')
-    # infos = html_elem.xpath('//div[@class="bd"]/p[1]//text()')
-    # roles = [j.strip() for i,j in enumerate(infos) if i % 2 == 0]
-    # descritions = [j.strip() for i,j in enumerate(infos) if i % 2 != 0]
-    # stars = html_elem.xpath('//div[@class="bd"]/div/span[2]/text()')
-    # comments = html_elem.xpath('//div[@class="bd"]/div/span[4]/text()')
-    # data = zip(links,titles,roles,descritions,stars,comments)
+    film['title'] = html_elem.xpath('//span[@property="v:itemreviewed"]/text()')[0]
+    film['year'] = html_elem.xpath('//span[@class="year"]/text()')[0].replace('(','').replace(')', '')
+    film['director'] = '/'.join(html_elem.xpath('//a[@rel="v:directedBy"]/text()'))
+    film['screenwriter'] = '/'.join(html_elem.xpath('//div[@id="info"]/span[2]/span[@class="attrs"]/a/text()'))
+    film['actors'] = '/'.join(html_elem.xpath('//div[@id="info"]/span[@class="actor"]/span[@class="attrs"]/a[@rel="v:starring"]/text()'))
+    film['type'] = '/'.join(html_elem.xpath('//div[@id="info"]/span[@property="v:genre"]/text()'))
+    film['runtime'] = '/'.join(html_elem.xpath('//div[@id="info"]/span[@property="v:runtime"]/text()'))
+    film['pubtime'] = '/'.join(html_elem.xpath('//div[@id="info"]/span[@property="v:initialReleaseDate"]/text()'))
+    film['country'] = getFistEleFromList(html_elem.xpath('//*[@id="info"]/text()[preceding-sibling::span[contains(text(), "制片国家/地区:")] and following-sibling::br]'))
+    # film['alias'] = getFistEleFromList(html_elem.xpath('//*[@id="info"]/text()[preceding-sibling::span[contains(text(), "制片国家/地区:")] and following-sibling::br]'))
+    film['language'] = getFistEleFromList(html_elem.xpath('//*[@id="info"]/text()[preceding-sibling::span[contains(text(), "语言:")] and following-sibling::br]'))
+    film['scoreNum'] = getFistEleFromList(html_elem.xpath('//span[@property="v:votes"]/text()'))
+    film['score'] = getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[2]/strong/text()'))
+    film['star5'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[1]/span[2]/text()'))
+    film['star4'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[2]/span[2]/text()'))
+    film['star3'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[3]/span[2]/text()'))
+    film['star2'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[4]/span[2]/text()'))
+    film['star1'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[5]/span[2]/text()'))
+    film['smallCommentNum'] = getDigit(html_elem.xpath('//*[@id="comments-section"]/div[1]/h2/span/a/text()')[0])
+    film['longCommentNum'] = getDigit(html_elem.xpath('//*[@id="reviews-wrapper"]/header/h2/span/a/text()')[0])
+    film['posterurl'] = getFistEleFromList(html_elem.xpath('//img[@rel="v:image"]/@src'))
+    film['summary'] = getFistEleFromList(html_elem.xpath('//*[@id="link-report"]/span/text()'))
     #return data
+    return film
 
+def getDigit(str):
+    return ''.join([x for x in str if x.isdigit()])
+
+def getFistEleFromList(list): 
+    if len(list) > 0 : 
+        return list[0]
+    else :
+        return ''
 
 # 保存数据到csv
 def save2file(data):
-    print("数据写入中", len(data))
+    print("数据写入中,写入长度:", len(data))
     file_exists = os.path.isfile('./data/movie_detail.csv')
     with open('./data/movie_detail.csv', mode='a+') as movie_detail_file:
-        fieldnames = ['id', 'title', '导演', '编剧', '主演']
+        fieldnames = ['title', 'year', 'director', 'screenwriter', 'actors','type','summary', 'runtime', 'pubtime', 'country', 'language', 'scoreNum', 'score', 'star5', 'star4', 'star3', 'star2', 'star1', 'smallCommentNum', 'longCommentNum', 'posterurl']
         movie_url_writer = csv.DictWriter(movie_detail_file, fieldnames=fieldnames, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # 如果文件存在 就不写头
         if not file_exists:
             movie_url_writer.writeheader()
-        
-        movie_url_writer.writerow(data)
+        for item in data:
+            if isinstance(item, dict):
+                movie_url_writer.writerow(item)
 
 #读取csvURL
 def getMovieUrl(start) :
     with open('./data/movie_url_file.csv', newline='') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=' ', quotechar=',')
+        spamreader = csv.reader(csvfile, delimiter='\n', quotechar=',')
         
-        interestingrows=[row[0].split(',')[2] for idx, row in enumerate(spamreader) if idx in range(start, start+STEP) and int(row[0].split(',')[3])==0]
+        #interestingrows=[row for idx, row in enumerate(spamreader) if idx in range(start, start+STEP)]
+        interestingrows=[row[0].split(',')[3] for idx, row in enumerate(spamreader) if idx in range(start, start+STEP)]
        
         print(interestingrows)
         return interestingrows
@@ -117,35 +143,37 @@ def markCrawed(start) :
     with open('./data/movie_url_file.csv', newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=' ', quotechar=',')
         
-        interestingrows=[row[0].split(',')[2] for idx, row in enumerate(spamreader) if idx in range(start, start+STEP) and int(row[0].split(',')[3])==0]
+        interestingrows=[row[0].split(',')[3] for idx, row in enumerate(spamreader) if idx in range(start, start+STEP) and int(row[0].split(',')[4])==0]
        
         print(interestingrows)
         return interestingrows
+
 
 # 汇总全部条数后一起写入
 def collectAndSave(start):
     print('开始读取url文件')
     setpList = []
     for page in range(start,APIEND, STEP): 
-        print('正在爬取第 ' + str(page) + ' 部至第 ' + str(page+STEP) + ' 部......')
-        urls = getMovieUrl(start)
+        print('正在爬取第' + str(page) + '部至第' + str(page+STEP-1) + ' 部......')
+        urls = getMovieUrl(page)
         for url in urls :
-            setpList.append(crawlDetail(url))
-            
-        # save2file(setpList)
+            movie = crawlDetail(url, 'keep')
+            setpList.append(movie)
+        save2file(setpList)
+        setpList = []
         # markCrawed(setpList)
     print('结束爬取....')   
 # 爬取页面
-def crawlDetail(url):
+def crawlDetail(url, keepalive):
     global ipList
-    print('开始爬取...' + url)
-    res = get_page(url)
+    print('\n开始爬取......' + url)
+    res = get_page(url, keepalive)
 
-    if res.find("上映日期") >=0 :
+    if res.find("我要写短评") >=0 :
         #解析页面数据
         data = parse_page(res)
         time.sleep(5)
-        #return data
+        return data
     else: 
         print(res, '要求登录，2s后重新发送请求。爬取id', id)
         ipList = get_ip_list()
@@ -153,11 +181,10 @@ def crawlDetail(url):
             ipList = get_ip_list()
         print(ipList)
         time.sleep(10)
-        crawlDetail(url)
-        
+        return crawlDetail(url, 'new')
         
 
 # 爬取详情页
 if __name__ == '__main__':
-    collectAndSave(1)
-    #print(list(map(getAPIUrl,[{'a':1, "url":'hello'},{"url":'world'}])))
+    collectAndSave(2681)
+    

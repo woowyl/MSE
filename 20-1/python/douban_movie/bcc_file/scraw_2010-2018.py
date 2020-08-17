@@ -84,8 +84,8 @@ def get_page(url):
 # 保存数据到csv
 def save2file(data):
     print("本次写入数据长度：", len(data))
-    file_exists = os.path.isfile('./data/movie_url_file_2019.csv')
-    with open('./data/movie_url_file_2019.csv', mode='a+') as movie_url_file:
+    file_exists = os.path.isfile('./data/movie_url_file_2010_2018.csv')
+    with open('./data/movie_url_file_2010_2018.csv', mode='a+') as movie_url_file:
         fieldnames = ['id', 'title', 'url', 'isCrawed']
         movie_url_writer = csv.DictWriter(movie_url_file, fieldnames=fieldnames, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # 如果文件存在 就不写头
@@ -109,7 +109,7 @@ def getAPIUrl(x):
 def crawlAPI(start):
     global ipList
     pageStart = start
-    url = 'https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10&tags=%E7%94%B5%E5%BD%B1&start={page}&year_range=2019,2019'
+    url = 'https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10&tags=%E7%94%B5%E5%BD%B1&start={page}&year_range=2010,2018'
     print('开始爬取')
     for page in range(pageStart,APIEND,20): 
         print('正在爬取第 ' + str(page) + ' 部至第 ' + str(page+20) + ' 部......')
@@ -142,5 +142,5 @@ def crawlAPI(start):
 
 # 爬取详情页
 if __name__ == '__main__':
-    crawlAPI(4560)
+    crawlAPI(0)
     #print(list(map(getAPIUrl,[{'a':1, "url":'hello'},{"url":'world'}])))

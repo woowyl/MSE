@@ -42,6 +42,7 @@ def get_ip_list():
         ip_list.append(tds[0].text)
     return ip_list
 
+
 def get_random_ip(ip_list):
     proxy_list = []
     for ip in ip_list:

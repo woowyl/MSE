@@ -23,7 +23,8 @@ STEP = 20
 ipList = []
 def get_ip_list():
     #国内高匿代理ip网站
-    url = 'http://www.xiladaili.com/https/'#{page}/'.format(page=random.randint(1,2))
+    # url = 'http://www.xiladaili.com/https/'#{page}/'.format(page=random.randint(1,2))
+    url = 'http://www.89ip.cn/index_1.html'#{page}/'.format(page=random.randint(1,2))
     ipAgent = {
         'http':'http://125.108.123.95:9000'
     }
@@ -37,9 +38,20 @@ def get_ip_list():
     for i in range(1, len(ips)):
         ip_info = ips[i]
         tds = ip_info.find_all('td')
-        # ip_list.append(tds[0].text + ':' + tds[1].text)
-        ip_list.append(tds[0].text)
+        ip_list.append(tds[0].text.replace("\n",'').replace("\t", "") + ':' + tds[1].text.replace("\n",'').replace("\t", ""))
+        # ip_list.append(tds[0].text)
     return ip_list
+
+def get_ip_list2():
+    #国内高匿代理ip网站
+    url = 'http://dev.qydailiip.com/api/?apikey=2dfe40deb680d0f6167b0a9abe6525a2557a8944&num=30&type=json&line=mac&proxy_type=putong&sort=1&model=all&protocol=https&address=&kill_address=&port=&kill_port=&today=true&abroad=1&isp=1&anonymity='#{page}/'.format(page=random.randint(1,2))
+    headers = {
+        'User-Agent': "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
+    }
+    #web_data = requests.get(url, headers=headers, proxies = ipAgent)
+    web_data = requests.get(url, headers=headers)
+    print(json.loads(web_data.text))
+    return json.loads(web_data.text)
 
 def get_random_ip(ip_list):
     proxy_list = []
@@ -50,7 +62,7 @@ def get_random_ip(ip_list):
     return proxies
 
 
-ipList = get_ip_list()
+ipList = get_ip_list2()
 proxies = get_random_ip(ipList)
 # 获取网页源代码
 def get_page(url, keepproxy):
@@ -65,22 +77,28 @@ def get_page(url, keepproxy):
         proxies = get_random_ip(ipList)
     # 加代理版本
     print(proxies)
-    try:
-        response = s.get(url, headers=headers, params=querystring, proxies = proxies, timeout=8)
-        data = response.text
-        return data
-    except: 
-        print("got excepiton")
-        data = get_page(url, 'new')
-        return data
+    loop = 1
+    while loop > 0:
+        try:
+            print("try", url)
+            response = s.get(url, headers=headers, params=querystring, proxies = proxies, timeout=8)
+            data = response.text
+            loop = 0
+            return data
+        except: 
+            loop = loop +1
+            if loop > 3:
+                proxies = get_random_ip(ipList)
+            print("got excepiton")
+            time.sleep(1)
     #response = requests.request("GET", url, headers=headers, params=querystring, proxies = {"http": "http://{}".format(proxy)})
 
 # 解析网页源代码
 def parse_page(html):
     film = {}
     html_elem = etree.HTML(html)
-    film['title'] = html_elem.xpath('//span[@property="v:itemreviewed"]/text()')[0]
-    film['year'] = html_elem.xpath('//span[@class="year"]/text()')[0].replace('(','').replace(')', '')
+    film['title'] = '/'.join(html_elem.xpath('//span[@property="v:itemreviewed"]/text()'))
+    film['year'] = '/'.join(html_elem.xpath('//span[@class="year"]/text()')).replace('(','').replace(')', '')
     film['director'] = '/'.join(html_elem.xpath('//a[@rel="v:directedBy"]/text()'))
     film['screenwriter'] = '/'.join(html_elem.xpath('//div[@id="info"]/span[2]/span[@class="attrs"]/a/text()'))
     film['actors'] = '/'.join(html_elem.xpath('//div[@id="info"]/span[@class="actor"]/span[@class="attrs"]/a[@rel="v:starring"]/text()'))
@@ -97,10 +115,10 @@ def parse_page(html):
     film['star3'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[3]/span[2]/text()'))
     film['star2'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[4]/span[2]/text()'))
     film['star1'] =getFistEleFromList(html_elem.xpath('//*[@id="interest_sectl"]/div[1]/div[3]/div[5]/span[2]/text()'))
-    film['smallCommentNum'] = getDigit(html_elem.xpath('//*[@id="comments-section"]/div[1]/h2/span/a/text()')[0])
-    film['longCommentNum'] = getDigit(html_elem.xpath('//*[@id="reviews-wrapper"]/header/h2/span/a/text()')[0])
+    film['smallCommentNum'] = getDigit('/'.join(html_elem.xpath('//*[@id="comments-section"]/div[1]/h2/span/a/text()')))
+    film['longCommentNum'] = getDigit('/'.join(html_elem.xpath('//*[@id="reviews-wrapper"]/header/h2/span/a/text()')))
     film['posterurl'] = getFistEleFromList(html_elem.xpath('//img[@rel="v:image"]/@src'))
-    film['summary'] = getFistEleFromList(html_elem.xpath('//*[@id="link-report"]/span/text()'))
+    film['summary'] = '/'.join(getFistEleFromList(html_elem.xpath('//*[@id="link-report"]/span/text()'))).strip().replace('\n', '').replace('\r', '')
     #return data
     return film
 
@@ -186,5 +204,5 @@ def crawlDetail(url, keepalive):
 
 # 爬取详情页
 if __name__ == '__main__':
-    collectAndSave(2681)
+    collectAndSave(4621)
     

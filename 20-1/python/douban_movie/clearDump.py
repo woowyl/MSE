@@ -1,6 +1,6 @@
 import pandas as pd
 
-outputfile='./data/movie_url_file.csv'
+outputfile='./data/movie_url_file_2019.csv'
 
 print("正在对", outputfile, '去重')
 

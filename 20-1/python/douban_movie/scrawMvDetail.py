@@ -24,7 +24,7 @@ ipList = []
 def get_ip_list():
     #国内高匿代理ip网站
     # url = 'http://www.xiladaili.com/https/'#{page}/'.format(page=random.randint(1,2))
-    url = 'http://www.89ip.cn/index_1.html'#{page}/'.format(page=random.randint(1,2))
+    url = 'http://www.nimadaili.com/https/'#{page}/'.format(page=random.randint(1,2))
     ipAgent = {
         'http':'http://125.108.123.95:9000'
     }
@@ -38,8 +38,8 @@ def get_ip_list():
     for i in range(1, len(ips)):
         ip_info = ips[i]
         tds = ip_info.find_all('td')
-        ip_list.append(tds[0].text.replace("\n",'').replace("\t", "") + ':' + tds[1].text.replace("\n",'').replace("\t", ""))
-        # ip_list.append(tds[0].text)
+        # ip_list.append(tds[0].text.replace("\n",'').replace("\t", "") + ':' + tds[1].text.replace("\n",'').replace("\t", ""))
+        ip_list.append(tds[0].text)
     return ip_list
 
 def get_ip_list2():
@@ -62,7 +62,7 @@ def get_random_ip(ip_list):
     return proxies
 
 
-ipList = get_ip_list2()
+ipList = get_ip_list()
 proxies = get_random_ip(ipList)
 # 获取网页源代码
 def get_page(url, keepproxy):
@@ -134,8 +134,8 @@ def getFistEleFromList(list):
 # 保存数据到csv
 def save2file(data):
     print("数据写入中,写入长度:", len(data))
-    file_exists = os.path.isfile('./data/movie_detail.csv')
-    with open('./data/movie_detail.csv', mode='a+') as movie_detail_file:
+    file_exists = os.path.isfile('./data/movie_detail_2018')
+    with open('./data/movie_detail_2018', mode='a+') as movie_detail_file:
         fieldnames = ['title', 'year', 'director', 'screenwriter', 'actors','type','summary', 'runtime', 'pubtime', 'country', 'language', 'scoreNum', 'score', 'star5', 'star4', 'star3', 'star2', 'star1', 'smallCommentNum', 'longCommentNum', 'posterurl']
         movie_url_writer = csv.DictWriter(movie_detail_file, fieldnames=fieldnames, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # 如果文件存在 就不写头
@@ -147,7 +147,7 @@ def save2file(data):
 
 #读取csvURL
 def getMovieUrl(start) :
-    with open('./data/movie_url_file.csv', newline='') as csvfile:
+    with open('./data/movie_url_file_2018.csv', newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter='\n', quotechar=',')
         
         #interestingrows=[row for idx, row in enumerate(spamreader) if idx in range(start, start+STEP)]
@@ -156,15 +156,15 @@ def getMovieUrl(start) :
         print(interestingrows)
         return interestingrows
 
-#标记为]
-def markCrawed(start) :
-    with open('./data/movie_url_file.csv', newline='') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=' ', quotechar=',')
+# #标记为]
+# def markCrawed(start) :
+#     with open('./data/movie_url_file.csv', newline='') as csvfile:
+#         spamreader = csv.reader(csvfile, delimiter=' ', quotechar=',')
         
-        interestingrows=[row[0].split(',')[3] for idx, row in enumerate(spamreader) if idx in range(start, start+STEP) and int(row[0].split(',')[4])==0]
+#         interestingrows=[row[0].split(',')[3] for idx, row in enumerate(spamreader) if idx in range(start, start+STEP) and int(row[0].split(',')[4])==0]
        
-        print(interestingrows)
-        return interestingrows
+#         print(interestingrows)
+#         return interestingrows
 
 
 # 汇总全部条数后一起写入
@@ -204,5 +204,5 @@ def crawlDetail(url, keepalive):
 
 # 爬取详情页
 if __name__ == '__main__':
-    collectAndSave(4621)
+    collectAndSave(1)
     

@@ -5,7 +5,6 @@ from lxml import etree
 import csv
 import time 
 import random
-from cons import headerChange
 from bs4 import BeautifulSoup
 import bs4
 import os.path

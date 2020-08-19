@@ -5,7 +5,6 @@ from lxml import etree
 import csv
 import time 
 import random
-from cons import headerChange
 from bs4 import BeautifulSoup
 import bs4
 import os.path
@@ -65,7 +64,7 @@ def get_random_ip(ip_list):
 ipList = get_ip_list()
 proxies = get_random_ip(ipList)
 # 获取网页源代码
-def get_page(url, keepproxy):
+def get_page(url, changeProxy):
     global proxies
     data={}
     querystring = {"status":"P"}
@@ -73,7 +72,7 @@ def get_page(url, keepproxy):
         'user-agent': ua.random,
     }
     print(ua.random)
-    if keepproxy == "new":
+    if changeProxy:
         proxies = get_random_ip(ipList)
     # 加代理版本
     print(proxies)
@@ -95,6 +94,11 @@ def get_page(url, keepproxy):
 
 # 解析网页源代码
 def parse_page(html):
+    with open('./data/log.csv', mode='a+') as movie_detail_file:
+        movie_url_writer = csv.writer(movie_detail_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        # 如果文件存在 就不写头
+        movie_url_writer.writerow([html])
+
     film = {}
     html_elem = etree.HTML(html)
     film['title'] = '/'.join(html_elem.xpath('//span[@property="v:itemreviewed"]/text()'))
@@ -120,6 +124,7 @@ def parse_page(html):
     film['posterurl'] = getFistEleFromList(html_elem.xpath('//img[@rel="v:image"]/@src'))
     film['summary'] = '/'.join(getFistEleFromList(html_elem.xpath('//*[@id="link-report"]/span/text()'))).strip().replace('\n', '').replace('\r', '')
     #return data
+    print("film data ==",film)
     return film
 
 def getDigit(str):
@@ -134,8 +139,8 @@ def getFistEleFromList(list):
 # 保存数据到csv
 def save2file(data):
     print("数据写入中,写入长度:", len(data))
-    file_exists = os.path.isfile('./data/movie_detail_2018')
-    with open('./data/movie_detail_2018', mode='a+') as movie_detail_file:
+    file_exists = os.path.isfile('./data/movie_detail_2018.csv')
+    with open('./data/movie_detail_2018.csv', mode='a+') as movie_detail_file:
         fieldnames = ['title', 'year', 'director', 'screenwriter', 'actors','type','summary', 'runtime', 'pubtime', 'country', 'language', 'scoreNum', 'score', 'star5', 'star4', 'star3', 'star2', 'star1', 'smallCommentNum', 'longCommentNum', 'posterurl']
         movie_url_writer = csv.DictWriter(movie_detail_file, fieldnames=fieldnames, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # 如果文件存在 就不写头
@@ -156,26 +161,15 @@ def getMovieUrl(start) :
         print(interestingrows)
         return interestingrows
 
-# #标记为]
-# def markCrawed(start) :
-#     with open('./data/movie_url_file.csv', newline='') as csvfile:
-#         spamreader = csv.reader(csvfile, delimiter=' ', quotechar=',')
-        
-#         interestingrows=[row[0].split(',')[3] for idx, row in enumerate(spamreader) if idx in range(start, start+STEP) and int(row[0].split(',')[4])==0]
-       
-#         print(interestingrows)
-#         return interestingrows
-
-
 # 汇总全部条数后一起写入
 def collectAndSave(start):
     print('开始读取url文件')
     setpList = []
     for page in range(start,APIEND, STEP): 
-        print('正在爬取第' + str(page) + '部至第' + str(page+STEP-1) + ' 部......')
+        print('正在爬取2018年第' + str(page) + '部至第' + str(page+STEP-1) + ' 部......')
         urls = getMovieUrl(page)
         for url in urls :
-            movie = crawlDetail(url, 'keep')
+            movie = crawlDetail(url, False)
             setpList.append(movie)
         save2file(setpList)
         setpList = []
@@ -185,22 +179,29 @@ def collectAndSave(start):
 def crawlDetail(url, keepalive):
     global ipList
     print('\n开始爬取......' + url)
-    res = get_page(url, keepalive)
-
-    if res.find("我要写短评") >=0 :
-        #解析页面数据
-        data = parse_page(res)
-        time.sleep(5)
-        return data
-    else: 
-        print(res, '要求登录，2s后重新发送请求。爬取id', id)
-        ipList = get_ip_list()
-        while len(ipList) == 0:
+    loop = 1
+    changeProxy = False
+    failNum = 0
+    while loop > 0:
+        if failNum > 10:
             ipList = get_ip_list()
-        print(ipList)
-        time.sleep(10)
-        return crawlDetail(url, 'new')
-        
+            while len(ipList) == 0:
+                ipList = get_ip_list()
+            print("失败次数超过10次，重新爬取代理",ipList)
+        res = get_page(url, changeProxy)
+
+        if res.find("我要写短评") >=0 :
+            #解析页面数据
+            data = parse_page(res)
+            time.sleep(5)
+            loop = 0
+            return data
+        else: 
+            print(res, '要求登录，2s后重新发送请求。爬取url', url)
+            changeProxy = True
+            failNum = failNum +1
+            time.sleep(2)
+            
 
 # 爬取详情页
 if __name__ == '__main__':

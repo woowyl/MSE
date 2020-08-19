@@ -5,18 +5,18 @@ from lxml import etree
 import csv
 import time 
 import random
-from cons import headerChange
 from bs4 import BeautifulSoup
 import bs4
 import os.path
 from fake_useragent import UserAgent  
 from requests.adapters import HTTPAdapter
 
-scrawUrlStartYear = 2010
-scrawUrlEndYear = 2016
-scrawStartPage = 10000
+scrawUrlStartYear = 2017
+scrawUrlEndYear = 2017
+scrawStartPage = 400
 
-ua = UserAgent(use_cache_server=False) 
+#ua = UserAgent(use_cache_server=False) 
+ua = UserAgent(verify_ssl=False) 
 s = requests.Session()
 s.mount('http://', HTTPAdapter(max_retries=3))
 s.mount('https://', HTTPAdapter(max_retries=3))
@@ -87,8 +87,8 @@ def get_page(url, proxyChange):
 # 保存数据到csv
 def save2file(data):
     print("本次写入数据长度：", len(data))
-    file_exists = os.path.isfile('./data/movie_url_file_2010_2016.csv')
-    with open('./data/movie_url_file_2010_2016.csv', mode='a+') as movie_url_file:
+    file_exists = os.path.isfile('./data/movie_url_file_{start}_{end}.csv'.format(start=str(scrawUrlStartYear), end=str(scrawUrlEndYear)))
+    with open('./data/movie_url_file_{start}_{end}.csv'.format(start=str(scrawUrlStartYear), end=str(scrawUrlEndYear)), mode='a+') as movie_url_file:
         fieldnames = ['id', 'title', 'url', 'isCrawed']
         movie_url_writer = csv.DictWriter(movie_url_file, fieldnames=fieldnames, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # 如果文件存在 就不写头
@@ -112,7 +112,7 @@ def getAPIUrl(x):
 def crawlAPI(start):
     global ipList
     pageStart = start
-    url = 'https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10&tags=%E7%94%B5%E5%BD%B1&start={page}&year_range={start},{end}'.format(start=str(scrawUrlStartYear), end=str(scrawUrlEndYear))
+    url = 'https://movie.douban.com/j/new_search_subjects?sort=U&range=0,10&tags=%E7%94%B5%E5%BD%B1&start={page}&year_range='+str(scrawUrlStartYear)+','+str(scrawUrlEndYear)
     print('开始爬取')
     running = 1
     needChangeProxy = False
@@ -138,6 +138,7 @@ def crawlAPI(start):
                 movieUrls = list(map(getAPIUrl,data))
                 save2file(movieUrls)
                 pageStart = pageStart+20
+                time.sleep(3)
             else:
                 if isinstance(data, list) and len(data) == 0:
                     running = 0

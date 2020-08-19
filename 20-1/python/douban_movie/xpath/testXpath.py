@@ -10,6 +10,8 @@ import bs4
 import os.path
 from fake_useragent import UserAgent  
 from requests.adapters import HTTPAdapter
+import re
+import emoji
 
 def tetXpath():
         html = '''<!DOCTYPE html>
@@ -797,8 +799,8 @@ def tetXpath():
             <body>
                  <div id="wrapper">test</div>
             </body></html>'''
-        html_elem = etree.HTML(html)
-        print(html_elem.xpath('//div[@id="wrapper"]/text()'))
+        html_elem = etree.HTML(give_emoji_free_text(html))
+        print(str(html_elem))
         film['title'] = '/'.join(html_elem.xpath('//span[@property="v:itemreviewed"]/text()'))
         film['year'] = '/'.join(html_elem.xpath('//span[@class="year"]/text()')).replace('(','').replace(')', '')
         film['director'] = '/'.join(html_elem.xpath('//a[@rel="v:directedBy"]/text()'))
@@ -824,7 +826,11 @@ def tetXpath():
         #return data
         print("film data ==",film)
         return film
-
+def give_emoji_free_text(text):
+    allchars = [str for str in text.encode().decode('utf-8')]
+    emoji_list = [c for c in allchars if c in emoji.UNICODE_EMOJI]
+    clean_text = ' '.join([str for str in text.encode().decode('utf-8').split() if not any(i in str for i in emoji_list)])
+    return clean_text
     
 def getDigit(str):
     return ''.join([x for x in str if x.isdigit()])

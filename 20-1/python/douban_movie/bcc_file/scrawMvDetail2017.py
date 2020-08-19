@@ -18,6 +18,7 @@ s.mount('http://', HTTPAdapter(max_retries=3))
 s.mount('https://', HTTPAdapter(max_retries=3))
 
 APIEND = 30000
+YEAR = 2017
 #每次读取的长度
 STEP = 20
 ipList = []
@@ -120,7 +121,6 @@ def parse_page(html):
     film['posterurl'] = getFistEleFromList(html_elem.xpath('//img[@rel="v:image"]/@src'))
     film['summary'] = '/'.join(getFistEleFromList(html_elem.xpath('//*[@id="link-report"]/span/text()'))).strip().replace('\n', '').replace('\r', '')
     #return data
-    print("film data ==",film)
     return film
 def give_emoji_free_text(text):
     allchars = [str for str in text.encode().decode('utf-8')]
@@ -140,8 +140,8 @@ def getFistEleFromList(list):
 # 保存数据到csv
 def save2file(data):
     print("数据写入中,写入长度:", len(data))
-    file_exists = os.path.isfile('./data/movie_detail_2018.csv')
-    with open('./data/movie_detail_2018.csv', mode='a+') as movie_detail_file:
+    file_exists = os.path.isfile('./data/movie_detail_{start}.csv'.format(start=str(YEAR)))
+    with open('./data/movie_detail_{start}.csv'.format(start=str(YEAR)), mode='a+') as movie_detail_file:
         fieldnames = ['title', 'year', 'director', 'screenwriter', 'actors','type','summary', 'runtime', 'pubtime', 'country', 'language', 'scoreNum', 'score', 'star5', 'star4', 'star3', 'star2', 'star1', 'smallCommentNum', 'longCommentNum', 'posterurl']
         movie_url_writer = csv.DictWriter(movie_detail_file, fieldnames=fieldnames, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # 如果文件存在 就不写头
@@ -153,7 +153,7 @@ def save2file(data):
 
 #读取csvURL
 def getMovieUrl(start) :
-    with open('./data/movie_url_file_2018.csv', newline='') as csvfile:
+    with open('./data/movie_url_file_{start}_{start}.csv'.format(start=str(YEAR)), newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter='\n', quotechar=',')
         
         #interestingrows=[row for idx, row in enumerate(spamreader) if idx in range(start, start+STEP)]
@@ -167,7 +167,7 @@ def collectAndSave(start):
     print('开始读取url文件')
     setpList = []
     for page in range(start,APIEND, STEP): 
-        print('正在爬取2018年第' + str(page) + '部至第' + str(page+STEP-1) + ' 部......')
+        print('正在爬取{start}年第'.format(start=str(YEAR)) + str(page) + '部至第' + str(page+STEP-1) + ' 部......')
         urls = getMovieUrl(page)
         for url in urls :
             movie = crawlDetail(url, False)
@@ -175,7 +175,7 @@ def collectAndSave(start):
         save2file(setpList)
         setpList = []
         # markCrawed(setpList)
-    print('结束爬取....')   
+    print('{start}detail 结束爬取....'.format(start=str(YEAR)))   
 # 爬取页面
 def crawlDetail(url, keepalive):
     global ipList

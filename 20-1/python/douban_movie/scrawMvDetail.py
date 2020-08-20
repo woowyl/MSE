@@ -171,6 +171,8 @@ def collectAndSave(start):
         urls = getMovieUrl(page)
         for url in urls :
             movie = crawlDetail(url, False)
+            if not movie :
+                continue
             setpList.append(movie)
         save2file(setpList)
         setpList = []
@@ -197,7 +199,10 @@ def crawlDetail(url, keepalive):
             time.sleep(5)
             loop = 0
             return data
-        else: 
+        elif res.find("页面不存在") >= 0:
+            print("页面不存在")
+            return False
+        else:
             print(res, '要求登录，2s后重新发送请求。爬取url', url)
             changeProxy = True
             failNum = failNum +1
@@ -206,5 +211,5 @@ def crawlDetail(url, keepalive):
 
 # 爬取详情页
 if __name__ == '__main__':
-    collectAndSave(1)
+    collectAndSave(3040)
     

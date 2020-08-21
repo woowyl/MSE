@@ -140,8 +140,8 @@ def getFistEleFromList(list):
 # 保存数据到csv
 def save2file(data):
     print("数据写入中,写入长度:", len(data))
-    file_exists = os.path.isfile('./data/movie_detail_2018.csv')
-    with open('./data/movie_detail_2018.csv', mode='a+') as movie_detail_file:
+    file_exists = os.path.isfile('./data/movie_detail_2019.csv')
+    with open('./data/movie_detail_2019.csv', mode='a+') as movie_detail_file:
         fieldnames = ['title', 'year', 'director', 'screenwriter', 'actors','type','summary', 'runtime', 'pubtime', 'country', 'language', 'scoreNum', 'score', 'star5', 'star4', 'star3', 'star2', 'star1', 'smallCommentNum', 'longCommentNum', 'posterurl']
         movie_url_writer = csv.DictWriter(movie_detail_file, fieldnames=fieldnames, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
         # 如果文件存在 就不写头
@@ -153,7 +153,7 @@ def save2file(data):
 
 #读取csvURL
 def getMovieUrl(start) :
-    with open('./data/movie_url_file_2018.csv', newline='') as csvfile:
+    with open('./data/movie_url_file_2019.csv', newline='') as csvfile:
         spamreader = csv.reader(csvfile, delimiter='\n', quotechar=',')
         
         #interestingrows=[row for idx, row in enumerate(spamreader) if idx in range(start, start+STEP)]
@@ -211,5 +211,5 @@ def crawlDetail(url, keepalive):
 
 # 爬取详情页
 if __name__ == '__main__':
-    collectAndSave(3040)
+    collectAndSave(4281)
     

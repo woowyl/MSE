@@ -11,7 +11,7 @@ import os.path
 from fake_useragent import UserAgent  
 from requests.adapters import HTTPAdapter
 
-scrawUrlStartYear = 2010
+scrawUrlStartYear = 2016
 scrawUrlEndYear = 2016
 scrawStartPage = 10000
 

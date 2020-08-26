@@ -1,6 +1,6 @@
 import pandas as pd
 
-YEAR = 2014
+YEAR = 2016
 
 outputfile='../data/movie_detail_{year}.csv'.format(year=str(YEAR))
 

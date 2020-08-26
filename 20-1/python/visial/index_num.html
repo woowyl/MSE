@@ -7,11 +7,11 @@
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.css">
+  <link rel="stylesheet" href="./plugins/fontawesome-free/css/all.css">
   <!-- Ionicons -->
   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="../../dist/css/adminlte.css">
+  <link rel="stylesheet" href="./dist/css/adminlte.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
@@ -45,8 +45,8 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="../../index.html" class="brand-link">
-      <img src="../../dist/img/dou.jpeg"
+    <a href="./index.html" class="brand-link">
+      <img src="./dist/img/dou.jpeg"
            alt="AdminLTE Logo"
            class="brand-image img-circle elevation-3"
            style="opacity: .8">
@@ -110,23 +110,23 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-1"></div>
-          <div class="col-md-8">
+          <div class="col-md-11">
             <!-- AREA CHART -->
             <div class="card">
-              <div id="main" style="width: 600px;height:400px;"></div>
+                <div id="numYear" style="width: 100%;height:450px;"></div>
             </div>
             <!-- /.card -->
 
             <!-- DONUT CHART -->
             <div class="card card-danger">
-             
+                <div id="numCountry" style="width: 100%;height:450px;"></div>
             </div>
             <!-- /.card -->
 
             <!-- PIE CHART -->
-            <div class="card card-danger">
+            <!-- <div class="card card-danger">
              
-            </div>
+            </div> -->
             <!-- /.card -->
 
           </div>
@@ -153,41 +153,17 @@
 <!-- ./wrapper -->
 
 <!-- jQuery -->
-<script src="../../plugins/jquery/jquery.min.js"></script>
+<script src="./plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap 4 -->
-<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="./plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
-<script src="../../dist/js/adminlte.min.js"></script>
+<script src="./dist/js/adminlte.min.js"></script>
 <!-- AdminLTE for demo purposes -->
-<script src="../../dist/js/demo.js"></script>
-<script src="../../dist/js/echarts.js"></script>
+<script src="./dist/js/demo.js"></script>
+<script src="./dist/js/echarts.js"></script>
 <!-- page script -->
-<script>
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
-
-    // 指定图表的配置项和数据
-    var option = {
-        title: {
-            text: 'ECharts 入门示例'
-        },
-        tooltip: {},
-        legend: {
-            data:['销量']
-        },
-        xAxis: {
-            data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
-        },
-        yAxis: {},
-        series: [{
-            name: '销量',
-            type: 'bar',
-            data: [5, 20, 36, 10, 10, 20]
-        }]
-    };
-
-    // 使用刚指定的配置项和数据显示图表。
-    myChart.setOption(option);
-</script>
+<script src="./chart/data.js"></script>
+<script src="./chart/num/numYear.js"></script>
+<script src="./chart/num/numCountry.js"></script>
 </body>
 </html>

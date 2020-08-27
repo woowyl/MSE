@@ -7,7 +7,15 @@
         title: {
             text: '评分人数Top20'
         },
-        tooltip: {},
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
+        grid: {
+            left: "30%"
+        },
         toolbox: {
             // y: 'bottom',
             feature: {
@@ -17,16 +25,44 @@
             }
         },
         legend: {
-            data:['销量']
+            data:['评分人数']
         },
-        xAxis: {
-            data: window.SCORE_NUM_TOP_NAMES
+        xAxis: [
+            {
+                type: 'value',
+                name: '评论人数',
+                min: 300000
+            },
+            {
+                type: 'value',
+                name: '分数',
+                min: 5
+            },
+        ],
+        yAxis: {
+            data: window.SCORE_NUM_TOP_NAMES,
+            inverse: true,
+            axisPointer: {
+                type: 'shadow'
+            }
         },
-        yAxis: {},
         series: [{
-            name: '销量',
+            name: '评分人数',
             type: 'bar',
-            data: window.SCORE_NUM_TOP_VALUES
+            data: window.SCORE_NUM_TOP_VALUES,
+            label: {
+                show: true,
+                position: 'right'
+            },
+        },{
+            name: '分数',
+            type: 'line',
+            data: [9.0, 8.9, 8.7, 8.1, 8.3, 6.6, 7.1, 8.1, 7.6, 6.7, 9.1, 8.3, 7.2, 8.1, 7.6, 8.7, 7.0, 8.6, 7.2, 7.2],
+            xAxisIndex: 1,
+            label: {
+                show: true,
+                position: 'right'
+            },
         }]
     };
 

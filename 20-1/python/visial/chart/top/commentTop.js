@@ -17,14 +17,14 @@
             }
         },
         legend: {
-            data:['销量']
+            data:['评论人数']
         },
         xAxis: {
             data: window.COMMENT_TOP_NAMES
         },
         yAxis: {},
         series: [{
-            name: '销量',
+            name: '评论人数',
             type: 'bar',
             data: window.COMMENT_TOP_VALUES
         }]

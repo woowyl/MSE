@@ -20,6 +20,7 @@ def getScore(file):
 
     print("============\n")
     ranges = [0,1,2,3,4,5,6,7,8,9,10]
+    print(df.groupby(pd.cut(df.score,ranges)).count())
     print("所有数据分布:  ", df.groupby(pd.cut(df.score,ranges)).count()['index'].tolist())
     print("============\n")
     print("喜剧数据分布:  ", df_comedy.groupby(pd.cut(df_comedy.score,ranges)).count()['index'].tolist())

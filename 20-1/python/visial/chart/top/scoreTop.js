@@ -16,17 +16,28 @@
                 }
             }
         },
+        grid: {
+            left: "30%"
+        },
         legend: {
-            data:['销量']
+            data:['评分']
         },
         xAxis: {
-            data: window.SCORE_TOP_NAMES
+            type: 'value',
+            min: 8.5
         },
-        yAxis: {},
+        yAxis: {
+            data: window.SCORE_TOP_NAMES,
+            inverse: true
+        },
         series: [{
-            name: '销量',
+            name: '评分',
             type: 'bar',
-            data: window.SCORE_TOP_VALUES
+            data: window.SCORE_TOP_VALUES,
+            label: {
+                show: true,
+                position: 'right'
+            },
         }]
     };
 

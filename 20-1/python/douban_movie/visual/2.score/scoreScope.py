@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import json
 
-path = './data/movie_detail_2018.csv' # use your path
+path = './data/movie_2010_2020.csv' # use your path
 print("正在对", path, '分数分布')
 
 pd.set_option('display.max_rows',10)

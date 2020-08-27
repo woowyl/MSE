@@ -8,6 +8,14 @@
             text: '评分TOP20'
         },
         tooltip: {},
+        toolbox: {
+            // y: 'bottom',
+            feature: {
+                saveAsImage: {
+                    pixelRatio: 2
+                }
+            }
+        },
         legend: {
             data:['销量']
         },

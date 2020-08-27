@@ -12,6 +12,14 @@
                     type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
                 }
             },
+            toolbox: {
+                // y: 'bottom',
+                feature: {
+                    saveAsImage: {
+                        pixelRatio: 2
+                    }
+                }
+            },
             grid: {
                 left: '3%',
                 right: '4%',

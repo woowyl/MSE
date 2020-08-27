@@ -42,36 +42,30 @@
             {
                 name: '中国大陆',
                 type: 'line',
-                stack: '总量',
                 data: window.NUM_YEAR_CN
             },{
                 name: '港澳台',
                 type: 'line',
-                stack: '总量',
                 data: window.NUM_YEAR_GAT
             },
             {
                 name: '印度',
                 type: 'line',
-                stack: '总量',
                 data: window.NUM_YEAR_IND
             },
             {
                 name: '美国',
                 type: 'line',
-                stack: '总量',
                 data: window.NUM_YEAR_USA
             },
             {
                 name: '韩国',
                 type: 'line',
-                stack: '总量',
                 data: window.NUM_YEAR_KOR 
             },
             {
                 name: '日本',
                 type: 'line',
-                stack: '总量',
                 data: window.NUM_YEAR_JAP
             }
         ],

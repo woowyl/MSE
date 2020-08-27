@@ -36,7 +36,7 @@
             {
                 type: 'value',
                 name: '分数',
-                min: 5
+                min: 1
             },
         ],
         yAxis: {
@@ -57,7 +57,7 @@
         },{
             name: '分数',
             type: 'line',
-            data: [9.0, 8.9, 8.7, 8.1, 8.3, 6.6, 7.1, 8.1, 7.6, 6.7, 9.1, 8.3, 7.2, 8.1, 7.6, 8.7, 7.0, 8.6, 7.2, 7.2],
+            data: window.SCORE_NUM_TOP_SCORE,
             xAxisIndex: 1,
             label: {
                 show: true,

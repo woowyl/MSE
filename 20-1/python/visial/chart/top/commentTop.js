@@ -7,7 +7,12 @@
         title: {
             text: '评论人数Top20'
         },
-        tooltip: {},
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            }
+        },
         toolbox: {
             // y: 'bottom',
             feature: {
@@ -16,17 +21,45 @@
                 }
             }
         },
+        grid: {
+            left: "30%"
+        },
         legend: {
             data:['评论人数']
         },
-        xAxis: {
-            data: window.COMMENT_TOP_NAMES
+        xAxis: [
+            {
+                type: 'value',
+                name: '评论人数',
+                min: 30000
+            },
+            {
+                type: 'value',
+                name: '分数',
+                min: 1
+            },
+        ],
+        yAxis: {
+            data: window.COMMENT_TOP_NAMES,
+            inverse: true,
         },
-        yAxis: {},
         series: [{
             name: '评论人数',
             type: 'bar',
-            data: window.COMMENT_TOP_VALUES
+            data: window.COMMENT_TOP_VALUES,
+            label: {
+                show: true,
+                position: 'right'
+            },
+        },{
+            name: '分数',
+            type: 'line',
+            data: window.COMMENT_TOP_SCORE,
+            xAxisIndex: 1,
+            label: {
+                show: true,
+                position: 'right'
+            },
         }]
     };
 

@@ -11,6 +11,7 @@ pd.set_option('display.max_rows',100)
 def getScore(file):
     df = pd.read_csv(file,error_bad_lines=False,sep=',')
     df = df[df.director.notnull()]
+    df = df.drop_duplicates(subset=['title'], keep ='first')
     
     df_score = df.sort_values(by=['score'], ascending=False)
     df_score['title'] = df_score['title'].str[0:15]

@@ -2,7 +2,7 @@ import pandas as pd
 
 YEAR = 2016
 
-outputfile='../data/movie_detail_{year}.csv'.format(year=str(YEAR))
+outputfile='./data/movie_detail_{year}.csv'.format(year=str(YEAR))
 
 print("正在对", outputfile, '去重')
 
